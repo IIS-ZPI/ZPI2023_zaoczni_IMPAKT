@@ -44,6 +44,11 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+        
+      - name: Configure Git user
+        run: |
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
   
       - name: Download artifact
         uses: actions/download-artifact@v3
