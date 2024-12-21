@@ -3,6 +3,9 @@
 on:
   push:
     branches: ["release"]
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches: [ "main", "release", "develop" ]
 
 concurrency:
   group: ${{ github.ref }}
@@ -13,9 +16,45 @@ jobs:
     uses: ./.github/workflows/unit-tests.yml
     with:
       python-version: 3.x
+      
+  build-artifact:
+    - name: Build artifact
+      run: |
+        mkdir -p build
+        echo "Building project artifact..."
+        cp -r . ./build/src
+        cd build && zip -r project-artifact.zip . && cd ..
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: project-artifact
+        path: build/project-artifact.zip
+
+  release-new-version:
+    needs: [ build-artifact ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+  
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-artifact
+  
+      - name: Deploy artifact to GitHub Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Deploying to GitHub Releases..."
+          RELEASE_VERSION=$(git describe --tags --abbrev=0 --match "v[0-9]*" | awk -F. '{$NF+=1; OFS="."; print}')
+          git tag -a "$RELEASE_VERSION" -m "Release $RELEASE_VERSION"
+          git push origin "$RELEASE_VERSION"
+          gh release create "$RELEASE_VERSION" build/project-artifact.zip --title "Release $RELEASE_VERSION"
 
   mark-as-ready:
-    needs: [ run-tests ]
+    needs: [ release-new-version ]
     runs-on: ubuntu-latest
     if: ${{ !failure() && !cancelled() }}
     steps:
