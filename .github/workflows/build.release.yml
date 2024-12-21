@@ -36,7 +36,7 @@ jobs:
           uses: actions/upload-artifact@v3
           with:
             name: project-artifact
-            path: build/project-artifact.zip
+            path: ./build/project-artifact.zip
 
   release-new-version:
     needs: [ build-artifact ]
@@ -54,6 +54,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: project-artifact
+          path: ./build/project-artifact.zip
   
       - name: Deploy artifact to GitHub Releases
         env:
@@ -78,7 +79,7 @@ jobs:
           NEW_TAG="v$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH"
           git tag -a "$NEW_TAG" -m "Release $NEW_TAG"
           git push origin "$NEW_TAG"
-          gh release create "NEW_TAG" build/project-artifact.zip --title "Release $RELEASE_VERSION"
+          gh release create "NEW_TAG" ./build/project-artifact.zip --title "Release $RELEASE_VERSION"
 
   mark-as-ready:
     needs: [ release-new-version ]
