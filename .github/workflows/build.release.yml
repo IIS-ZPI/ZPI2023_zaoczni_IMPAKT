@@ -8,7 +8,7 @@ on:
     branches: [ "main", "release", "develop" ]
 
 concurrency:
-  group: ${{ github.ref }}-release
+  group: release
   cancel-in-progress: true
 
 jobs:
@@ -55,7 +55,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Deploying to GitHub Releases..."
-          RELEASE_VERSION=$(git describe --tags --abbrev=0 --match "v[0-9]*" | awk -F. '{$NF+=1; OFS="."; print}')
+          RELEASE_VERSION=$(git describe --tags --abbrev=0 --match "[0-9]*" | awk -F. '{$NF+=1; OFS="."; print}')
           git tag -a "$RELEASE_VERSION" -m "Release $RELEASE_VERSION"
           git push origin "$RELEASE_VERSION"
           gh release create "$RELEASE_VERSION" build/project-artifact.zip --title "Release $RELEASE_VERSION"
