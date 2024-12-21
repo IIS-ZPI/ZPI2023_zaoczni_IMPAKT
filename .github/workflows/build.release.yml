@@ -54,7 +54,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: project-artifact
-          path: ./build/project-artifact.zip
   
       - name: Deploy artifact to GitHub Releases
         env:
