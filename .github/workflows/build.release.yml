@@ -3,9 +3,6 @@
 on:
   push:
     branches: ["release"]
-  pull_request:
-    types: [ opened, synchronize, reopened ]
-    branches: [ "main", "release", "develop" ]
 
 concurrency:
   group: release
@@ -75,8 +72,8 @@ jobs:
             NEW_PATCH=0
           fi
           
-          NEW_TAG="v$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH"
-          gh release create "$NEW_TAG" ./project-artifact.zip --title "Release $NEW_TAG"
+          NEW_TAG="$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH"
+          gh release create "$NEW_TAG" ./project-artifact.zip --title "$NEW_TAG"
 
   mark-as-ready:
     needs: [ release-new-version ]
