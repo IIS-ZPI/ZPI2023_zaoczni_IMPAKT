@@ -47,8 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
-        
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Configure Git user
         run: |
           git config --local user.name "GitHub Actions"
@@ -70,8 +72,6 @@ jobs:
           echo "Tag name from github.ref_name: ${{  github.ref_name }}"
 
           VERSION=$(echo "$LAST_TAG" | sed 's/^v//')
-          git ls-remote --tags --sort=committerdate | grep -o 'v.*' | sort -r | head -1
-          git describe --tags $(git rev-list --tags --max-count=1)
           echo $VERSION
           
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
