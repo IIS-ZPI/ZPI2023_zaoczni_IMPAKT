@@ -1,6 +1,9 @@
 ﻿name: Build (release)
 
 on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches: [ "main", "release", "develop" ]
   push:
     branches: ["release"]
 
@@ -14,7 +17,6 @@ jobs:
     with:
       python-version: 3.x
       
-  # TODO: Build .exe instead of .zip
   build-artifact:
       needs: [ run-tests ]
       runs-on: ubuntu-latest
@@ -26,14 +28,15 @@ jobs:
           run: |
             mkdir -p build
             echo "Building project artifact..."
-            cp ./main.py ./build/src 
-            cd build && zip -r project-artifact.zip . && cd ..
+            pip install pyinstaller
+            pyinstaller --onefile --windowed .\main.py
+            cd dist && zip -r project-artifact.zip . && cd ..
   
         - name: Upload artifact
           uses: actions/upload-artifact@v3
           with:
             name: project-artifact
-            path: ./build/project-artifact.zip
+            path: ./dist/project-artifact.zip
 
   release-new-version:
     needs: [ build-artifact ]
