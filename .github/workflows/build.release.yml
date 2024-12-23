@@ -1,9 +1,6 @@
 ﻿name: Build (release)
 
 on:
-  pull_request:
-    types: [ opened, synchronize, reopened ]
-    branches: [ "main", "release", "develop" ]
   push:
     branches: ["release"]
 
