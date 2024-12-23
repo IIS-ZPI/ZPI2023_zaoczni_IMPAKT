@@ -1,0 +1,24 @@
+﻿name: Build (release)
+
+on:
+  push:
+    branches: ["release"]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-tests:
+    uses: ./.github/workflows/unit-tests.yml
+    with:
+      python-version: 3.x
+
+  mark-as-ready:
+    needs: [ run-tests ]
+    runs-on: ubuntu-latest
+    if: ${{ !failure() && !cancelled() }}
+    steps:
+      - name: Echo success message
+        run: |
+          echo "All OK."

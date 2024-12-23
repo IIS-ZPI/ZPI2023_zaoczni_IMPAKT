@@ -1,1 +1,11 @@
+# Secrets
+**/.secrets
+**/.env
+
+# IDE
+.idea
+
+bin
+obj
 __pycache__
+*.pyc
