@@ -26,11 +26,12 @@ jobs:
         
         - name: Build artifact
           run: |
-            mkdir build
             echo "Building project artifact..."
             python -m pip install --upgrade pip
+            pip install pipenv
+            pipenv install --system --deploy
             pip install pyinstaller
-            pyinstaller --onefile --windowed --hidden-import "requests" main.py
+            pyinstaller --onefile --windowed main.py
             cd dist
             powershell -Command "Compress-Archive -Path * -DestinationPath project-artifact.zip"
             cd ..
