@@ -1,6 +1,9 @@
 ﻿name: Build (release)
 
 on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches: [ "main", "release", "develop" ]
   push:
     branches: ["release"]
 
@@ -26,8 +29,8 @@ jobs:
             echo "Building project artifact..."
             python -m pip install --upgrade pip
             pip install pipenv
-            pip install requests
-            pipenv install --system --deploy
+            pipenv install
+            pipenv shell
             pip install pyinstaller
             pyinstaller --onefile main.py
             cd dist
