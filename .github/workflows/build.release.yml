@@ -32,7 +32,7 @@ jobs:
             pip install requests
             pipenv install --system --deploy
             pip install pyinstaller
-            pyinstaller --onefile --windowed main.py
+            pyinstaller --onefile main.py
             cd dist
             powershell -Command "Compress-Archive -Path * -DestinationPath project-artifact.zip"
             cd ..
