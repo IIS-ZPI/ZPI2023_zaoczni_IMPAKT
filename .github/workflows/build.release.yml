@@ -68,6 +68,7 @@ jobs:
 
           VERSION=$(echo "$LAST_TAG" | sed 's/^v//')
           
+          git describe --tags $(git rev-list --tags --max-count=1)
           echo $VERSION
           
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
