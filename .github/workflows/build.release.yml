@@ -67,7 +67,7 @@ jobs:
           LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v1.0.0")
 
           VERSION=$(echo "$LAST_TAG" | sed 's/^v//')
-          
+          git ls-remote --tags --sort=committerdate | grep -o 'v.*' | sort -r | head -1
           git describe --tags $(git rev-list --tags --max-count=1)
           echo $VERSION
           
