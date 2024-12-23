@@ -66,9 +66,8 @@ jobs:
           echo "Deploying to GitHub Releases..."
           LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v1.0.0")
 
-          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo $RELEASE_VERSION
-          echo ${{ env.RELEASE_VERSION }}
+          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
+          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
 
           VERSION=$(echo "$LAST_TAG" | sed 's/^v//')
           git ls-remote --tags --sort=committerdate | grep -o 'v.*' | sort -r | head -1
