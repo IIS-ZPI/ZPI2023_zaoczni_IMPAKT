@@ -9,3 +9,8 @@ bin
 obj
 __pycache__
 *.pyc
+
+# Build
+dist
+build
+main.spec

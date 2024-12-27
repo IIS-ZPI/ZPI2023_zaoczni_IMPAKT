@@ -5,7 +5,7 @@ on:
     branches: ["release"]
 
 concurrency:
-  group: ${{ github.ref }}
+  group: release
   cancel-in-progress: true
 
 jobs:
@@ -13,9 +13,78 @@ jobs:
     uses: ./.github/workflows/unit-tests.yml
     with:
       python-version: 3.x
+      
+  build-artifact:
+      needs: [ run-tests ]
+      runs-on: windows-latest
+      steps:
+        - name: Check out code
+          uses: actions/checkout@v2
+        
+        - name: Build artifact
+          run: |
+            echo "Building project artifact..."
+            python -m pip install --upgrade pip
+            pip install pipenv
+            pip install requests
+            pipenv install --system --deploy
+            pip install pyinstaller
+            pyinstaller --onefile main.py
+            cd dist
+            powershell -Command "Compress-Archive -Path * -DestinationPath project-artifact.zip"
+            cd ..
+          shell: cmd
+  
+        - name: Upload artifact
+          uses: actions/upload-artifact@v3
+          with:
+            name: project-artifact
+            path: ./dist/project-artifact.zip
+
+  release-new-version:
+    needs: [ build-artifact ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git user
+        run: |
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
+  
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: project-artifact
+  
+      - name: Deploy artifact to GitHub Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Deploying to GitHub Releases..."
+          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v1.0.0")
+
+          VERSION=$(echo "$LAST_TAG" | sed 's/^v//')
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          
+          if [ "$MAJOR" -eq 1 ]; then
+            NEW_MAJOR=2
+            NEW_MINOR=0
+            NEW_PATCH=0
+          else
+            NEW_MAJOR=$MAJOR
+            NEW_MINOR=$((MINOR + 1))
+            NEW_PATCH=0
+          fi
+          
+          NEW_TAG="$NEW_MAJOR.$NEW_MINOR.$NEW_PATCH"
+          gh release create "$NEW_TAG" ./project-artifact.zip --title "$NEW_TAG"
 
   mark-as-ready:
-    needs: [ run-tests ]
+    needs: [ release-new-version ]
     runs-on: ubuntu-latest
     if: ${{ !failure() && !cancelled() }}
     steps:
