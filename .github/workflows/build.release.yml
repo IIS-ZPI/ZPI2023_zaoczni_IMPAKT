@@ -11,9 +11,7 @@ concurrency:
 jobs:
   run-tests:
     uses: ./.github/workflows/unit-tests.yml
-    with:
-      python-version: 3.x
-      
+
   build-artifact:
       needs: [ run-tests ]
       runs-on: windows-latest
