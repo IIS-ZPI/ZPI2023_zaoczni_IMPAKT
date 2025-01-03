@@ -1,4 +1,5 @@
-from unittest import TestCase
+import unittest
+from parameterized import parameterized
 from nbp_api_caller import NBPApiCaller
 from datetime import datetime, timedelta
 
@@ -6,45 +7,45 @@ from datetime import datetime, timedelta
 # "python3 -m unittest test.py -v"
 #  to print the output in the terminal
 
-class TestNBPApiCaller(TestCase):
+class TestNBPApiCaller(unittest.TestCase):
     def setUp(self):
         self.caller = NBPApiCaller()
 
-    def test_fetch_exchange_rate_same_currency(self):
-        start_date = datetime.now()
-        end_date = start_date
-        with self.assertRaises(RuntimeError):
-            self.caller.fetch_exchange_rate("USD", "USD", start_date, end_date)
+    @parameterized.expand([
+        ("USD", "PLN"),
+        ("EUR", "PLN"),
+        ("GBP", "PLN"),
+        ("USD", "EUR"),
+        ("USD", "GBP"),
+    ])
 
-    def test_fetch_exchange_rate_pln_to_xxx(self):
+    def test_fetch_exchange_rate(self, base_currency, quote_currency):
         start_date = datetime.now() - timedelta(days=7)
         end_date = datetime.now()
-        rates = self.caller.fetch_exchange_rate("PLN", "USD", start_date, end_date)
+        rates = self.caller.fetch_exchange_rate(base_currency, quote_currency, start_date, end_date)
         self.assertIsInstance(rates, list)
         self.assertGreater(len(rates), 0)
 
-    def test_fetch_exchange_rate_xxx_to_pln(self):
-        start_date = datetime.now() - timedelta(days=7)
-        end_date = datetime.now()
-        rates = self.caller.fetch_exchange_rate("USD", "PLN", start_date, end_date)
-        self.assertIsInstance(rates, list)
-        self.assertGreater(len(rates), 0)
+    @parameterized.expand([
+        ("USD", "PLN"),
+        ("EUR", "PLN"),
+        ("GBP", "PLN"),
+    ])
 
-    def test_fetch_exchange_rate_xxx_to_xxx(self):
-        start_date = datetime.now() - timedelta(days=7)
-        end_date = datetime.now()
-        rates = self.caller.fetch_exchange_rate("USD", "EUR", start_date, end_date)
-        self.assertIsInstance(rates, list)
-        self.assertGreater(len(rates), 0)
-
-    def test_get_currency_rates(self):
+    def test_get_currency_rates(self, currency, start_date_str, end_date_str):
         start_date_str = "2022-01-01"
         end_date_str = "2022-01-31"
-        rates = self.caller.get_currency_rates("USD", start_date_str, end_date_str)
+        rates = self.caller.get_currency_rates(currency, start_date_str, end_date_str)
         self.assertIsInstance(rates, list)
         self.assertGreater(len(rates), 0)
 
-    def test_convert_rates_to_pln(self):
+    @parameterized.expand([
+        ("USD", "PLN"),
+        ("EUR", "PLN"),
+        ("GBP", "PLN"),
+    ])
+
+    def test_convert_rates_to_pln(self, currency):
         rates = [{"rate": 4.5}, {"rate": 4.6}]
         converted_rates = self.caller.convert_rates_to_PLN(rates)
         self.assertIsInstance(converted_rates, list)
@@ -52,7 +53,13 @@ class TestNBPApiCaller(TestCase):
         self.assertAlmostEqual(converted_rates[0]["rate"], 1 / 4.5, places=4)
         self.assertAlmostEqual(converted_rates[1]["rate"], 1 / 4.6, places=4)
 
-    def test_combine_rates(self):
+    @parameterized.expand([
+        ("USD", "PLN"),
+        ("EUR", "PLN"),
+        ("GBP", "PLN"),
+    ])
+    
+    def test_combine_rates(self, base_currency, quote_currency):
         base_rates = [{"effectiveDate": "2022-01-01", "mid": 4.5}, {"effectiveDate": "2022-01-02", "mid": 4.6}]
         quote_rates = [{"effectiveDate": "2022-01-01", "mid": 1.2}, {"effectiveDate": "2022-01-03", "mid": 1.3}]
         combined_rates = self.caller._combine_rates(base_rates, quote_rates)
