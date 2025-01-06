@@ -28,7 +28,6 @@ class DistributionAnalysis:
             end_date = dates[len(dates) - 1]
             change = rates_by_date[end_date] - rates_by_date[start_date]
             changes.append(change)
-        print(changes)
         return changes
 
     def calculate_changes_distribution(self, report_type):
