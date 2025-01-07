@@ -44,7 +44,7 @@ class ActionHandler:
         distribution_analysis = DistributionAnalysis(raw_data)
         distribution = distribution_analysis.calculate_changes_distribution(report_type)
 
-        plot_data = self.plotter.create_currency_changes_hisogram(distribution['bins'], distribution['frequency'], base_currency, quote_currency)
+        plot_data = self.plotter.create_currency_changes_histogram_plot(distribution['bins'], distribution['frequency'], base_currency, quote_currency)
 
         self.interface.update_plot(plot_data)
 

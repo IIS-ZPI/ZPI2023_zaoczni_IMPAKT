@@ -34,7 +34,7 @@ class Plotter:
 
         return fig
     
-    def create_currency_changes_hisogram(self, bins, frequency, base_currency, quote_currency):
+    def create_currency_changes_histogram_plot(self, bins, frequency, base_currency, quote_currency):
         plt.close('all')
 
         bin_width = bins[1] - bins[0] if len(bins) > 1 else 1
