@@ -203,3 +203,24 @@ class Interface:
     def reset_button_style(self):
         self.button_market_analysis.config(bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=BUTTON_FONT, relief="flat")
         self.button_currency_changes_histogram.config(bg=BACKGROUND_COLOR, fg=TEXT_COLOR, font=BUTTON_FONT, relief="flat")
+
+    def show_error_message(self, title, message):
+        error_window = tk.Toplevel(self.root)
+        error_window.title(title)
+        error_window.geometry('300x150')
+        error_window.config(bg="white")
+
+        label = tk.Label(error_window, text=message, font=LABEL_FONT, fg='black', bg="white", wraplength=280)
+        label.pack(pady=20)
+
+        button = tk.Button(
+            error_window,
+            text='OK',
+            bg=SUBMIT_BUTTON_COLOR,
+            fg='white',
+            font=('Arial', 10, 'bold'),
+            activebackground=ACTIVE_COLOR,
+            activeforeground='white',
+            command=error_window.destroy
+        )
+        button.pack(pady=10)

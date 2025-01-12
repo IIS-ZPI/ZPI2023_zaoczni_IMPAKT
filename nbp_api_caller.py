@@ -8,13 +8,14 @@ class NBPApiCaller:
         pass
 
     def fetch_exchange_rate(self, base_currency: str, quote_currency: str, start_date: datetime, end_date: datetime):
+        if end_date > datetime.now():
+            raise ValueError("End date cannot be in the future.")
 
         start_date_str = start_date.strftime("%Y-%m-%d")
         end_date_str = end_date.strftime("%Y-%m-%d")
 
         if base_currency == quote_currency:
-            # TODO: Handle
-            return
+            raise ValueError("Base and quote currenty cannot be the same.")
 
         try:
             exchange_rates = []
