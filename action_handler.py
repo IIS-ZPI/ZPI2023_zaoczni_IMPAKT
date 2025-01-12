@@ -20,7 +20,13 @@ class ActionHandler:
 
         end_date = datetime.now()
         start_date = end_date - timedelta(days=common.DATA_RANGES[data_range])
-        raw_data = self.NBPApiCaller.fetch_exchange_rate(base_currency, quote_currency, start_date, end_date)
+
+        try:
+            raw_data = self.NBPApiCaller.fetch_exchange_rate(base_currency, quote_currency, start_date, end_date)
+        except Exception as e:
+            self.interface.show_error_message("Invalid input", str(e))
+            return
+        
 
         # TODO: preprocess raw_data if needed, get statistical data and pass them to plotter
 
@@ -36,11 +42,12 @@ class ActionHandler:
         start_date = datetime.combine(start_date, datetime.min.time())
         end_date = start_date + timedelta(days=common.CURRENCY_CHANGES_HISTOGRAM_REPORT_TYPES[report_type])
 
-        if end_date > datetime.now():
-            raise ValueError("End date cannot be in the future.")
+        try:
+            raw_data = self.NBPApiCaller.fetch_exchange_rate(base_currency, quote_currency, start_date, end_date)
+        except Exception as e:
+            self.interface.show_error_message("Invalid input", str(e))
+            return
         
-        raw_data = self.NBPApiCaller.fetch_exchange_rate(base_currency, quote_currency, start_date, end_date)
-
         distribution_analysis = DistributionAnalysis(raw_data)
         distribution = distribution_analysis.calculate_changes_distribution(report_type)
 
