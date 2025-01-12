@@ -27,10 +27,11 @@ class ActionHandler:
             self.interface.show_error_message("Invalid input", str(e))
             return
         
-
-        # TODO: preprocess raw_data if needed, get statistical data and pass them to plotter
-
-        plot_data = self.plotter.create_exchange_rates_plot(raw_data, base_currency, quote_currency)
+        analysis = RateAnalysis(raw_data)
+        statistics = analysis.calculate_statistics()
+        sessions = analysis.calculate_sessions()
+        
+        plot_data = self.plotter.create_exchange_rates_plot(raw_data, base_currency, quote_currency, statistics, sessions)
 
         self.interface.update_plot(plot_data)
 
