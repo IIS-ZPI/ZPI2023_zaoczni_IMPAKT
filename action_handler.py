@@ -24,7 +24,8 @@ class ActionHandler:
         try:
             raw_data = self.NBPApiCaller.fetch_exchange_rate(base_currency, quote_currency, start_date, end_date)
         except Exception as e:
-            self.interface.show_error_message("Invalid input", str(e))
+            title, message = e.args[0]
+            self.interface.show_error_message(title, message)
             return
         
         analysis = RateAnalysis(raw_data)
@@ -46,7 +47,8 @@ class ActionHandler:
         try:
             raw_data = self.NBPApiCaller.fetch_exchange_rate(base_currency, quote_currency, start_date, end_date)
         except Exception as e:
-            self.interface.show_error_message("Invalid input", str(e))
+            title, message = e.args[0]
+            self.interface.show_error_message(title, message)
             return
         
         distribution_analysis = DistributionAnalysis(raw_data)
