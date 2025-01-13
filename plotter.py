@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 import numpy as np
 
 class Plotter:
@@ -11,22 +12,16 @@ class Plotter:
         dates = [entry['date'] for entry in data]
         rates = [entry['rate'] for entry in data]
 
-        fig, ax = plt.subplots(figsize=(5, 4))
+        fig, ax = plt.subplots(figsize=(12, 6))
 
         ax.plot(dates, rates)
         ax.set_title(f'{base_currency}/{quote_currency}')
         ax.set_xlabel('Date')
-        ax.set_ylabel('Currency exchange rate')
+        ax.set_ylabel(f'{base_currency} price in {quote_currency}')
         ax.set_facecolor('#f2f2f2')
         ax.grid(True)
 
-        # Add text box with statistics
-        stats_text = "\n".join([f"{key}: {value:.4f}" if isinstance(value, float) else f"{key}: {value}" for key, value in statistics.items()])
-        ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="#f9f9f9"))
-
-        # Add text box with sessions
-        sessions_text = "\n".join([f"{key}: {value}" for key, value in sessions.items()])
-        ax.text(0.40, 0.98, sessions_text, transform=ax.transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="#f9f9f9"))
+        self.display_text_boxes(ax, quote_currency, statistics, sessions)
 
         num_dates = len(dates)
         min_ticks = 7
@@ -36,10 +31,32 @@ class Plotter:
 
         ax.set_xticks(dates[::step])
         ax.set_xticklabels(dates[::step], rotation=45)
+        ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=False))
+        ax.ticklabel_format(style='plain', axis='y')
 
+        # Stretch y axis by 20% to get some area for textboxes
+        y_min, y_max = ax.get_ylim()
+        margin = (y_max - y_min) * 0.2
+        ax.set_ylim(y_min - margin, y_max + margin)
+        
         plt.tight_layout()
 
         return fig
+    
+    def display_text_boxes(self, ax, quote_currency, statistics, sessions):
+        # Add text box with statistics
+        stats_text = f"Median: {statistics.get('median'):.6f} {quote_currency}\n" +\
+            f"Mode: {statistics.get('mode'):.6f} {quote_currency}\n" +\
+            f"Standard deviation: {statistics.get('standard_deviation'):.6f} {quote_currency}\n" +\
+            f"Coefficient of variation: {statistics.get('coefficient_of_variation'):.6f} {quote_currency}"
+        ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="#f9f9f9"))
+        
+        
+        # Add text box with sessions
+        sessions_text = f"Sessions\n" +\
+            f"Upward: {sessions.get('session_upward')}\n" +\
+            f"Downward: {sessions.get('session_downward')}"
+        ax.text(0.29, 0.98, sessions_text, transform=ax.transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="#f9f9f9"))
     
     def create_currency_changes_histogram_plot(self, bins, frequency, base_currency, quote_currency):
         plt.close('all')
@@ -48,7 +65,7 @@ class Plotter:
         bin_edges = bins[:-1]
         bin_centers = [edge + bin_width / 2 for edge in bin_edges]
 
-        fig, ax = plt.subplots(figsize=(6, 4))
+        fig, ax = plt.subplots(figsize=(12, 6))
 
         ax.bar(bin_centers, frequency, width=bin_width, align='center', edgecolor='black')
 
