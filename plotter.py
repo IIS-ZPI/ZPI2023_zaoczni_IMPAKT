@@ -5,7 +5,7 @@ class Plotter:
     def __init__(self):
         pass
 
-    def create_exchange_rates_plot(self, data, base_currency, quote_currency):
+    def create_exchange_rates_plot(self, data, base_currency, quote_currency, statistics, sessions):
         plt.close('all')
 
         dates = [entry['date'] for entry in data]
@@ -13,13 +13,20 @@ class Plotter:
 
         fig, ax = plt.subplots(figsize=(5, 4))
 
-        ax.plot(dates, rates, label=f'{base_currency}/{quote_currency}')
+        ax.plot(dates, rates)
         ax.set_title(f'{base_currency}/{quote_currency}')
         ax.set_xlabel('Date')
         ax.set_ylabel('Currency exchange rate')
-        ax.legend(loc='upper left')
         ax.set_facecolor('#f2f2f2')
         ax.grid(True)
+
+        # Add text box with statistics
+        stats_text = "\n".join([f"{key}: {value:.4f}" if isinstance(value, float) else f"{key}: {value}" for key, value in statistics.items()])
+        ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="#f9f9f9"))
+
+        # Add text box with sessions
+        sessions_text = "\n".join([f"{key}: {value}" for key, value in sessions.items()])
+        ax.text(0.40, 0.98, sessions_text, transform=ax.transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="#f9f9f9"))
 
         num_dates = len(dates)
         min_ticks = 7
