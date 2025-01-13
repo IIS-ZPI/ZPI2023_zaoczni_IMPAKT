@@ -18,8 +18,9 @@ class Interface:
     def __init__(self, root, action_handler):
         self.root = root
         self.root.title('IMPAKT')
-        self.root.geometry('800x600')
+        self.root.geometry('1200x800')
         self.root.config(bg="white")
+        self.root.resizable(False, False)
 
         self.create_header()
         self.create_widgets_frame()
