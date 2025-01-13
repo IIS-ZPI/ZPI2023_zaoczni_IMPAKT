@@ -9,13 +9,14 @@ class NBPApiCaller:
 
     def fetch_exchange_rate(self, base_currency: str, quote_currency: str, start_date: datetime, end_date: datetime):
         if end_date > datetime.now():
-            raise ValueError("End date cannot be in the future.")
+            raise ValueError(("Invalid selection", "End date cannot be in the future."))
+        
 
         start_date_str = start_date.strftime("%Y-%m-%d")
         end_date_str = end_date.strftime("%Y-%m-%d")
 
         if base_currency == quote_currency:
-            raise ValueError("Base and quote currenty cannot be the same.")
+            raise ValueError(("Invalid selection", "Base and quote currenty cannot be the same."))
 
         try:
             exchange_rates = []
@@ -42,7 +43,7 @@ class NBPApiCaller:
             return exchange_rates
         
         except requests.exceptions.RequestException as e:
-            raise RuntimeError(f"Error fetching data from NBP API: {e}")
+            raise
         
 
     def get_currency_rates(self, base_currency, start_date_str, end_date_str):
@@ -56,7 +57,7 @@ class NBPApiCaller:
             currency_rates = data["rates"]
             return currency_rates
         except requests.exceptions.RequestException as e:
-            raise RuntimeError(f"Error fetching base currency rates: {e}")
+            raise ConnectionError(("Connection error", "Retrieving response from NBP API failed due to lack of network connection."))
 
 
     def _combine_rates(self, base_rates, quote_rates):
