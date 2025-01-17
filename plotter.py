@@ -34,9 +34,10 @@ class Plotter:
         ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=False))
         ax.ticklabel_format(style='plain', axis='y')
 
-        # Stretch y axis by 20% to get some area for textboxes
+        # Stretch y axis by stretch_pct to get some area for textboxes
+        stretch_pct = 0.25
         y_min, y_max = ax.get_ylim()
-        margin = (y_max - y_min) * 0.2
+        margin = (y_max - y_min) * stretch_pct
         ax.set_ylim(y_min - margin, y_max + margin)
         
         plt.tight_layout()
