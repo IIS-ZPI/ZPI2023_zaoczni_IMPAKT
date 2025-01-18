@@ -16,7 +16,7 @@ class NBPApiCaller:
         end_date_str = end_date.strftime("%Y-%m-%d")
 
         if base_currency == quote_currency:
-            raise ValueError(("Invalid selection", "Base and quote currenty cannot be the same."))
+            raise ValueError(("Invalid selection", "Base and quote currency cannot be the same."))
 
         try:
             exchange_rates = []
