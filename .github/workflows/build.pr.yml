@@ -1,0 +1,23 @@
+﻿name: Build (PR)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: ["main", "release", "develop"]
+
+concurrency:
+  group: ${{ github.ref }}-pr
+  cancel-in-progress: true
+
+jobs:
+  run-tests:
+    uses: ./.github/workflows/unit-tests.yml
+
+  mark-as-ready:
+    needs: [ run-tests ]
+    runs-on: ubuntu-latest
+    if: ${{ !failure() && !cancelled() && github.event.pull_request != null }}
+    steps:
+      - name: Echo success message
+        run: |
+          echo "All OK."

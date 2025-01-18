@@ -1,1 +1,0 @@
-# ZPI2023_zaoczni_IMPAKT
