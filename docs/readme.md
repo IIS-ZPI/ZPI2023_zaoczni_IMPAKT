@@ -1,0 +1,1 @@
+Link to editable: https://docs.google.com/document/d/1SGQybyklbllOCKhn2EE9TLjLGytGmUYvcdKrBJJoJYc/edit?tab=t.0#heading=h.3jy9gktsq1ly
